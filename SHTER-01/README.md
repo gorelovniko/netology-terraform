@@ -204,7 +204,6 @@ sudo chmod a+r /etc/apt/sources.list.d/opentofu.list
 Installing OpenTofu
 Finally, you can install OpenTofu:
 
-Code Block
 ```bash
 sudo apt-get update
 sudo apt-get install -y tofu
@@ -212,7 +211,7 @@ sudo apt-get install -y tofu
 
 ### Проверка установки
 
-После установки проверьте версию:
+После установки проверяем версию:
 ```bash
 tofu --version
 ```
@@ -222,11 +221,11 @@ tofu --version
 OpenTofu v1.10.2
 ```
 
-### Регистры tofu для России
+### Регистры провайдеров tofu для России
 
-Разработчики доступ к регистрам провайдеров для ip-адресов из России.
+Разработчики закрыли доступ к регистрам провайдеров для ip-адресов из России.
 Yandex предоставляет зеркало Terraform-провайдеров, которое работает в России.
-Добавим настройку в ~/.terraformrc или ~/.tofurc:
+Надо добавить настройку в ~/.terraformrc или ~/.tofurc:
 
 ```
 provider_installation {
