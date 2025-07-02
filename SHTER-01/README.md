@@ -5,10 +5,11 @@
 
 ### 1. Установка Terraform и проверка версии
 
-Установлена Terraform версии 1.8.4:
+Установлена Terraform версии 1.10.0 и Docker версии 28.3.0:
 
 ```bash
 $ terraform --version
+$ docker --version
 ```
 
 ![](img/SHTER-01.1.png)
@@ -109,11 +110,6 @@ resource "docker_container" "nginx" {
 
 ![](img/SHTER-01.1.5.png)
 
-```bash
-CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                  NAMES
-9017afdcb411   9592f5595f2b   "/docker-entrypoint.…"   30 seconds ago  Up 30 seconds  0.0.0.0:9090->80/tcp   example_ymeZmAjl79uGTUvy
-```
-
 ### 6. Замена имени контейнера и использование `-auto-approve`
 
 После замены имени контейнера на `hello_world` и выполнения `terraform apply -auto-approve`:
@@ -160,76 +156,104 @@ resource "docker_image" "nginx" {
 
 ![](img/SHTER-01.1.8.png)
 
+---
+
 ## Задание 2*
 
-### Создание ВМ и настройка Docker
-
-1. Создана ВМ в облаке через web-консоль.
-2. Установлен Docker на ВМ.
-3. Настроен remote docker context через SSH:
-
-```hcl
-provider "docker" {
-  host = "ssh://user@vm-ip:22"
-}
-```
-
-### Развертывание MySQL контейнера
-
-Код для развертывания MySQL:
-
-```hcl
-resource "random_password" "mysql_root" {
-  length = 16
-  special = true
-}
-
-resource "random_password" "mysql_user" {
-  length = 16
-  special = true
-}
-
-resource "docker_image" "mysql" {
-  name = "mysql:8"
-}
-
-resource "docker_container" "mysql" {
-  name  = "mysql_${random_password.mysql_root.result}"
-  image = docker_image.mysql.name
-  ports {
-    internal = 3306
-    external = 3306
-    ip       = "127.0.0.1"
-  }
-  env = [
-    "MYSQL_ROOT_PASSWORD=${random_password.mysql_root.result}",
-    "MYSQL_DATABASE=wordpress",
-    "MYSQL_USER=wordpress",
-    "MYSQL_PASSWORD=${random_password.mysql_user.result}",
-    "MYSQL_ROOT_HOST=%"
-  ]
-}
-```
-
-Проверка переменных окружения в контейнере:
-
-```bash
-$ docker exec -it mysql_abc123 env | grep MYSQL
-MYSQL_ROOT_PASSWORD=secret_root_password
-MYSQL_PASSWORD=secret_user_password
-```
+---
 
 ## Задание 3*
 
-### Установка OpenTofu
+### Установка OpenTofu (альтернативы Terraform)
 
-Установлен OpenTofu версии 1.6.0:
+OpenTofu - это форк Terraform с открытой лицензией (Mozilla Public License 2.0), созданный после изменения лицензирования HashiCorp.
+
+Возьму инструкцию установки с сайта разработчика. [opentofu install on debian](https://opentofu.org/docs/intro/install/deb/)
+
+Step-by-step instructions
+
+The following steps explain how to set up the OpenTofu Debian repositories. These instructions should work on most Debian-based Linux systems.
+
+Installing tooling
+In order to add the repositories, you will need to install some tooling. On most Debian-based operating systems, these tools will already be installed.
 
 ```bash
-$ tofu --version
-OpenTofu v1.6.0
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+Set up the OpenTofu repository
+First, you need to make sure you have a copy of the OpenTofu GPG key. This verifies that your packages have indeed been created using the official pipeline and have not been tampered with.
+```
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg >/dev/null
+curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | sudo gpg --no-tty --batch --dearmor -o /etc/apt/keyrings/opentofu-repo.gpg >/dev/null
+sudo chmod a+r /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
+```
+
+Now you have to create the OpenTofu source list.
+
+```bash
+echo \
+  "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main
+deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main" | \
+  sudo tee /etc/apt/sources.list.d/opentofu.list > /dev/null
+sudo chmod a+r /etc/apt/sources.list.d/opentofu.list
+```
+
+Installing OpenTofu
+Finally, you can install OpenTofu:
+
+Code Block
+```bash
+sudo apt-get update
+sudo apt-get install -y tofu
+```
+
+### Проверка установки
+
+После установки проверьте версию:
+```bash
+tofu --version
+```
+Вывод команды:
+
+```
+OpenTofu v1.10.2
+```
+
+### Регистры tofu для России
+
+Разработчики доступ к регистрам провайдеров для ip-адресов из России.
+Yandex предоставляет зеркало Terraform-провайдеров, которое работает в России.
+Добавим настройку в ~/.terraformrc или ~/.tofurc:
+
+```
+provider_installation {
+  network_mirror {
+    url = "https://terraform-mirror.yandexcloud.net/"
+    include = ["registry.opentofu.org/*/*"]
+  }
+  direct {
+    exclude = ["registry.opentofu.org/*/*"]
+  }
+}
+```
+
+### Использование OpenTofu
+
+OpenTofu поддерживает все основные функции Terraform и совместим с существующими конфигурациями.
+
+Команды аналогичны Terraform:
+```bash
+tofu init
+tofu plan
+tofu apply
+tofu destroy
 ```
 
 ### Выполнение кода с OpenTofu
 
 Код успешно выполнен с помощью `tofu apply`. Различий в работе по сравнению с Terraform не обнаружено.
+
+---
