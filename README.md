@@ -3,7 +3,7 @@
 
 1. [Ввдение в Terraform](SHTER-01/README.md)
 
-2. []()
+2. [Основы Terraform. Yandex Cloud](SHTER-02/README.md)
 
 3. []()
 
