@@ -64,11 +64,11 @@ variable "vm_db_platform_id" {
 
 ###ssh vars
 
-variable "vms_ssh_public_root_key" {
-  type        = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJUbS7hoNixx/pbzRt3xf5xYMuq2x6RBXFHslOjQ6JAC alt@host-75"
-  description = "ssh-keygen -t ed25519"
-}
+# variable "vms_ssh_public_root_key" {
+#   type        = string
+#   default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJUbS7hoNixx/pbzRt3xf5xYMuq2x6RBXFHslOjQ6JAC alt@host-75"
+#   description = "ssh-keygen -t ed25519"
+# }
 
 # Name VM
 

@@ -29,9 +29,9 @@ resource "yandex_compute_instance" "platform" {
   zone        = "${var.default_zone_a}"
   
   resources {
-    cores         = 2
-    memory        = 1
-    core_fraction = 20
+    cores         = var.vms_resources.web.cores
+    memory        = var.vms_resources.web.memory
+    core_fraction = var.vms_resources.web.core_fraction
   }
   boot_disk {
     initialize_params {
@@ -47,8 +47,8 @@ resource "yandex_compute_instance" "platform" {
   }
 
   metadata = {
-    serial-port-enable = 1
-    ssh-keys           = "ubuntu:${var.vms_ssh_public_root_key}"
+    serial-port-enable = var.metadata.serial-port-enable
+    ssh-keys           = var.metadata.ssh-keys
   }
 
 }
@@ -62,9 +62,9 @@ resource "yandex_compute_instance" "platform_db" {
   zone        = "${var.default_zone_b}"
 
   resources {
-    cores         = 2
-    memory        = 2
-    core_fraction = 20
+    cores         = var.vms_resources.db.cores
+    memory        = var.vms_resources.db.memory
+    core_fraction = var.vms_resources.db.core_fraction
   }
   boot_disk {
     initialize_params {
@@ -80,8 +80,8 @@ resource "yandex_compute_instance" "platform_db" {
   }
 
   metadata = {
-    serial-port-enable = 1
-    ssh-keys           = "ubuntu:${var.vms_ssh_public_root_key}"
+    serial-port-enable = var.metadata.serial-port-enable
+    ssh-keys           = var.metadata.ssh-keys
   }
 
 }

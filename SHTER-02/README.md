@@ -43,7 +43,7 @@ variable "vm_web_platform_id" {
 ![](img/SHTER-02.2.JPG)  
 
 Terraform plan не выявил никаких изменений:
-![](img/SHTER-02.2.1JPG)
+![](img/SHTER-02.2.1.JPG)
 
 ---
 
@@ -68,7 +68,9 @@ Terraform plan не выявил никаких изменений:
 
 ### Задание 6
 
-![]()
+![](img/SHTER-02.2.6.1.JPG)
+![](img/SHTER-02.2.6.2.JPG)
+![](img/SHTER-02.2.6.3.JPG)
 
 ---
 
