@@ -1,16 +1,16 @@
 resource "yandex_compute_instance" "web" {
-  count    = 2
-  name     = "web-${count.index + 1}"
-  hostname = "web-${count.index + 1}"
+  count    = var.web_instance_count
+  name     = "${var.web_instance_name_prefix}-${count.index + 1}"
+  hostname = "${var.web_instance_name_prefix}-${count.index + 1}"
   
   resources {
-    cores  = 2
-    memory = 2
+    cores  = var.web_instance_cpu
+    memory = var.web_instance_memory
   }
 
   boot_disk {
     initialize_params {
-      image_id = var.image_id
+      image_id = "fd8u8ttgp0t4d19ov0k5" # Ubuntu-20.04-lts
     }
   }
 
@@ -25,7 +25,7 @@ resource "yandex_compute_instance" "web" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${local.ssh_key}"
+    ssh-keys = "${var.web_instance_username}:${local.ssh_key}"
   }
 
   depends_on = [yandex_compute_instance.db]

@@ -1,32 +1,32 @@
 # 1. Создаем 3 одинаковых диска по 1 Гб
 resource "yandex_compute_disk" "storage_disks" {
-  count = 3
+  count      = var.storage_disks_count
   
-  name     = "storage-disk-${count.index + 1}"
-  type     = "network-hdd"
-  zone     = var.default_zone
-  size     = 1  # 1 ГБ
-  block_size = 4096
+  name       = "${var.storage_disk_name_prefix}-${count.index + 1}"
+  type       = var.storage_disk_type
+  zone       = var.default_zone
+  size       = var.storage_disk_size_gb
+  block_size = var.storage_disk_block_size
 }
 
 # 2. Создаем одиночную ВМ "storage" (без count/for_each)
 resource "yandex_compute_instance" "storage" {
-  name        = "storage"
-  hostname    = "storage"
+  name        = var.storage_vm_name
+  hostname    = var.storage_vm_name
   platform_id = var.default_platform_id
   zone        = var.default_zone
 
   allow_stopping_for_update = true
 
   resources {
-    cores  = 2
-    memory = 4
+    cores  = var.storage_vm_cpu_cores
+    memory = var.storage_vm_memory_gb
   }
 
   boot_disk {
     initialize_params {
-      image_id = var.image_id # Ubuntu 20.04
-      size     = 10
+      image_id = "fd8u8ttgp0t4d19ov0k5" # Ubuntu-20.04-lts
+      size     = var.storage_vm_boot_disk_size_gb
     }
   }
 
@@ -48,6 +48,6 @@ resource "yandex_compute_instance" "storage" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${local.ssh_key}"
+    ssh-keys = "${var.storage_instance_username}:${local.ssh_key}"
   }
 }
