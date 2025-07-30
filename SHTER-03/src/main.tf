@@ -7,3 +7,7 @@ resource "yandex_vpc_subnet" "develop" {
   network_id     = yandex_vpc_network.develop.id
   v4_cidr_blocks = var.default_cidr
 }
+
+data "yandex_compute_image" "ubuntu_image" {
+  family = "ubuntu-2004-lts" # Ищем последний образ из семейства Ubuntu 20.04
+}
